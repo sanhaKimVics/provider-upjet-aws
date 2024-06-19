@@ -5,7 +5,7 @@ import (
 	"github.com/upbound/provider-aws/config/common"
 )
 
-// Configure adds configurations for the sagemaker group.
+// Configure adds configurations for mwaa group.
 func Configure(p *config.Provider) {
 
 	p.AddResourceConfigurator("aws_mwaa_environment", func(r *config.Resource) {
