@@ -5,24 +5,24 @@ metadata:
     meta.upbound.io/example-id: mwaa/v1beta1/environment
   labels:
     testing.upbound.io/example-name: example
-  name: example
+  name: example-environment
 spec:
   forProvider:
     name: example
     dagS3Path: dags/
     executionRoleArnSelector:
       matchLabels:
-        testing.upbound.io/example-name: example
+        testing.upbound.io/example-name: example-role
     networkConfiguration:
       - securityGroupIdRefs:
           - name: example
         subnetIdRefs:
-          - name: sample-subnet1
-          - name: sample-subnet2
+          - name: example-subnet1
+          - name: example-subnet2
     region: us-west-1
     sourceBucketArnSelector:
       matchLabels:
-        testing.upbound.io/example-name: versioning-example
+        testing.upbound.io/example-name: example-versioning
 
 ---
 
@@ -30,10 +30,10 @@ apiVersion: iam.aws.upbound.io/v1beta1
 kind: Role
 metadata:
   annotations:
-    meta.upbound.io/example-id: iam/v1beta1/role
+    meta.upbound.io/example-id: mwaa/v1beta1/environment
   labels:
     testing.upbound.io/example-name: role
-  name: sample-role
+  name: example-role
 spec:
   forProvider:
     assumeRolePolicy: |
@@ -54,10 +54,10 @@ apiVersion: iam.aws.upbound.io/v1beta1
 kind: RolePolicyAttachment
 metadata:
   annotations:
-    meta.upbound.io/example-id: iam/v1beta1/role
+    meta.upbound.io/example-id: mwaa/v1beta1/environment
   labels:
     testing.upbound.io/example-name: role
-  name: sample-policy-attachment
+  name: example-policy-attachment
 spec:
   forProvider:
     policyArnSelector:
@@ -71,10 +71,10 @@ apiVersion: iam.aws.upbound.io/v1beta1
 kind: Policy
 metadata:
   annotations:
-    meta.upbound.io/example-id: iam/v1beta1/role
+    meta.upbound.io/example-id: mwaa/v1beta1/environment
   labels:
     testing.upbound.io/example-name: role
-  name: sample-user-policy
+  name: example-user-policy
 spec:
   forProvider:
     policy: |
@@ -86,21 +86,21 @@ spec:
                   "Action": "airflow:PublishMetrics",
                   "Resource": "arn:aws:airflow:us-west-1:${data.aws_account_id}:environment/example"
               },
-              { 
+              {
                   "Effect": "Deny",
                   "Action": "s3:ListAllMyBuckets",
                   "Resource": "*"
               },
-              { 
+              {
                   "Effect": "Allow",
-                  "Action": [ 
+                  "Action": [
                       "s3:GetObject*",
                       "s3:GetBucket*",
                       "s3:List*"
                   ],
                   "Resource": [
-                      "arn:aws:s3:::versioning-example",
-                      "arn:aws:s3:::versioning-example/*"
+                      "arn:aws:s3:::example-versioning",
+                      "arn:aws:s3:::example-versioning/*"
                   ]
               },
               {
@@ -179,15 +179,15 @@ apiVersion: s3.aws.upbound.io/v1beta1
 kind: BucketVersioning
 metadata:
   annotations:
-    meta.upbound.io/example-id: s3/v1beta1/bucketversioning
+    meta.upbound.io/example-id: mwaa/v1beta1/environment
   labels:
     testing.upbound.io/example-name: versioning_example
-  name: versioning-example
+  name: example-versioning
 spec:
   forProvider:
     bucketSelector:
       matchLabels:
-        testing.upbound.io/example-name: example
+        testing.upbound.io/example-name: example-bucket
     region: us-west-1
     versioningConfiguration:
       status: Enabled
@@ -198,9 +198,9 @@ apiVersion: s3.aws.upbound.io/v1beta1
 kind: Bucket
 metadata:
   annotations:
-    meta.upbound.io/example-id: s3/v1beta1/bucket
+    meta.upbound.io/example-id: mwaa/v1beta1/environment
   labels:
-    testing.upbound.io/example-name: example
+    testing.upbound.io/example-name: example-bucket
   name: example-${Rand.RFC1123Subdomain}
 spec:
   forProvider:
@@ -212,10 +212,10 @@ apiVersion: ec2.aws.upbound.io/v1beta1
 kind: SecurityGroup
 metadata:
   annotations:
-    meta.upbound.io/example-id: ec2/v1beta1/securitygroup
+    meta.upbound.io/example-id: mwaa/v1beta1/environment
   labels:
     testing.upbound.io/example-name: example
-  name: example
+  name: example-security-group
 spec:
   forProvider:
     region: us-west-1
@@ -224,20 +224,20 @@ spec:
     tags:
       Name: allow_tls
     vpcIdRef:
-      name: sample-vpc
+      name: example-vpc
 
 ---
 
 apiVersion: ec2.aws.upbound.io/v1beta1
 kind: Subnet
 metadata:
-  name: sample-subnet1
+  name: example-subnet1
 spec:
   forProvider:
     region: us-west-1
     availabilityZone: us-west-1b
     vpcIdRef:
-      name: sample-vpc
+      name: example-vpc
     cidrBlock: 172.16.10.0/24
 
 ---
@@ -245,13 +245,13 @@ spec:
 apiVersion: ec2.aws.upbound.io/v1beta1
 kind: Subnet
 metadata:
-  name: sample-subnet2
+  name: example-subnet2
 spec:
   forProvider:
     region: us-west-1
     availabilityZone: us-west-1c
     vpcIdRef:
-      name: sample-vpc
+      name: example-vpc
     cidrBlock: 172.16.11.0/24
 
 ---
@@ -260,10 +260,10 @@ apiVersion: ec2.aws.upbound.io/v1beta1
 kind: VPC
 metadata:
   annotations:
-    meta.upbound.io/example-id: ec2/v1beta1/vpc
+    meta.upbound.io/example-id: mwaa/v1beta1/environment
   labels:
     testing.upbound.io/example-name: example
-  name: sample-vpc
+  name: example-vpc
 spec:
   forProvider:
     region: us-west-1
