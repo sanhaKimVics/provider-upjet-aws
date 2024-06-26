@@ -456,8 +456,17 @@ type NetworkConfigurationInitParameters struct {
 	SecurityGroupIds []*string `json:"securityGroupIds,omitempty" tf:"security_group_ids,omitempty"`
 
 	// The private subnet IDs in which the environment should be created. MWAA requires two subnets.
+	// +crossplane:generate:reference:type=github.com/upbound/provider-aws/apis/ec2/v1beta1.Subnet
 	// +listType=set
 	SubnetIds []*string `json:"subnetIds,omitempty" tf:"subnet_ids,omitempty"`
+
+	// References to Subnet in ec2 to populate subnetIds.
+	// +kubebuilder:validation:Optional
+	SubnetIdsRefs []v1.Reference `json:"subnetIdsRefs,omitempty" tf:"-"`
+
+	// Selector for a list of Subnet in ec2 to populate subnetIds.
+	// +kubebuilder:validation:Optional
+	SubnetIdsSelector *v1.Selector `json:"subnetIdsSelector,omitempty" tf:"-"`
 }
 
 type NetworkConfigurationObservation struct {
@@ -479,9 +488,18 @@ type NetworkConfigurationParameters struct {
 	SecurityGroupIds []*string `json:"securityGroupIds" tf:"security_group_ids,omitempty"`
 
 	// The private subnet IDs in which the environment should be created. MWAA requires two subnets.
+	// +crossplane:generate:reference:type=github.com/upbound/provider-aws/apis/ec2/v1beta1.Subnet
 	// +kubebuilder:validation:Optional
 	// +listType=set
-	SubnetIds []*string `json:"subnetIds" tf:"subnet_ids,omitempty"`
+	SubnetIds []*string `json:"subnetIds,omitempty" tf:"subnet_ids,omitempty"`
+
+	// References to Subnet in ec2 to populate subnetIds.
+	// +kubebuilder:validation:Optional
+	SubnetIdsRefs []v1.Reference `json:"subnetIdsRefs,omitempty" tf:"-"`
+
+	// Selector for a list of Subnet in ec2 to populate subnetIds.
+	// +kubebuilder:validation:Optional
+	SubnetIdsSelector *v1.Selector `json:"subnetIdsSelector,omitempty" tf:"-"`
 }
 
 type SchedulerLogsInitParameters struct {

@@ -16,9 +16,9 @@ spec:
     networkConfiguration:
       securityGroupIdRefs:
         - name: example
-      subnetIdRefs:
-        - name: example-subnet1
-        - name: example-subnet2
+      subnetIdsSelector:
+        matchLabels:
+          testing.upbound.io/example-name: example_subnet
     region: us-west-1
     sourceBucketArnSelector:
       matchLabels:
@@ -224,7 +224,7 @@ metadata:
   annotations:
     meta.upbound.io/example-id: mwaa/v1beta1/environment
   labels:
-    testing.upbound.io/example-name: example-subnet1
+    testing.upbound.io/example-name: example_subnet
   name: example-subnet1
 spec:
   forProvider:
@@ -240,7 +240,7 @@ metadata:
   annotations:
     meta.upbound.io/example-id: mwaa/v1beta1/environment
   labels:
-    testing.upbound.io/example-name: example-subnet2
+    testing.upbound.io/example-name: example_subnet
   name: example-subnet2
 spec:
   forProvider:

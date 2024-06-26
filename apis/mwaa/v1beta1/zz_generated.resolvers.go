@@ -25,6 +25,7 @@ func (mg *Environment) ResolveReferences( // ResolveReferences of this Environme
 	r := reference.NewAPIResolver(c, mg)
 
 	var rsp reference.ResolutionResponse
+	var mrsp reference.MultiResolutionResponse
 	var err error
 	{
 		m, l, err = apisresolver.GetManagedResource("iam.aws.upbound.io", "v1beta1", "Role", "RoleList")
@@ -64,12 +65,33 @@ func (mg *Environment) ResolveReferences( // ResolveReferences of this Environme
 	}
 	mg.Spec.ForProvider.KMSKey = reference.ToPtrValue(rsp.ResolvedValue)
 	mg.Spec.ForProvider.KMSKeyRef = rsp.ResolvedReference
+
+	if mg.Spec.ForProvider.NetworkConfiguration != nil {
+		{
+			m, l, err = apisresolver.GetManagedResource("ec2.aws.upbound.io", "v1beta1", "Subnet", "SubnetList")
+			if err != nil {
+				return errors.Wrap(err, "failed to get the reference target managed resource and its list for reference resolution")
+			}
+			mrsp, err = r.ResolveMultiple(ctx, reference.MultiResolutionRequest{
+				CurrentValues: reference.FromPtrValues(mg.Spec.ForProvider.NetworkConfiguration.SubnetIds),
+				Extract:       reference.ExternalName(),
+				References:    mg.Spec.ForProvider.NetworkConfiguration.SubnetIdsRefs,
+				Selector:      mg.Spec.ForProvider.NetworkConfiguration.SubnetIdsSelector,
+				To:            reference.To{List: l, Managed: m},
+			})
+		}
+		if err != nil {
+			return errors.Wrap(err, "mg.Spec.ForProvider.NetworkConfiguration.SubnetIds")
+		}
+		mg.Spec.ForProvider.NetworkConfiguration.SubnetIds = reference.ToPtrValues(mrsp.ResolvedValues)
+		mg.Spec.ForProvider.NetworkConfiguration.SubnetIdsRefs = mrsp.ResolvedReferences
+
+	}
 	{
 		m, l, err = apisresolver.GetManagedResource("s3.aws.upbound.io", "v1beta2", "Bucket", "BucketList")
 		if err != nil {
 			return errors.Wrap(err, "failed to get the reference target managed resource and its list for reference resolution")
 		}
-
 		rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
 			CurrentValue: reference.FromPtrValue(mg.Spec.ForProvider.SourceBucketArn),
 			Extract:      resource.ExtractParamPath("arn", true),
@@ -121,12 +143,33 @@ func (mg *Environment) ResolveReferences( // ResolveReferences of this Environme
 	}
 	mg.Spec.InitProvider.KMSKey = reference.ToPtrValue(rsp.ResolvedValue)
 	mg.Spec.InitProvider.KMSKeyRef = rsp.ResolvedReference
+
+	if mg.Spec.InitProvider.NetworkConfiguration != nil {
+		{
+			m, l, err = apisresolver.GetManagedResource("ec2.aws.upbound.io", "v1beta1", "Subnet", "SubnetList")
+			if err != nil {
+				return errors.Wrap(err, "failed to get the reference target managed resource and its list for reference resolution")
+			}
+			mrsp, err = r.ResolveMultiple(ctx, reference.MultiResolutionRequest{
+				CurrentValues: reference.FromPtrValues(mg.Spec.InitProvider.NetworkConfiguration.SubnetIds),
+				Extract:       reference.ExternalName(),
+				References:    mg.Spec.InitProvider.NetworkConfiguration.SubnetIdsRefs,
+				Selector:      mg.Spec.InitProvider.NetworkConfiguration.SubnetIdsSelector,
+				To:            reference.To{List: l, Managed: m},
+			})
+		}
+		if err != nil {
+			return errors.Wrap(err, "mg.Spec.InitProvider.NetworkConfiguration.SubnetIds")
+		}
+		mg.Spec.InitProvider.NetworkConfiguration.SubnetIds = reference.ToPtrValues(mrsp.ResolvedValues)
+		mg.Spec.InitProvider.NetworkConfiguration.SubnetIdsRefs = mrsp.ResolvedReferences
+
+	}
 	{
 		m, l, err = apisresolver.GetManagedResource("s3.aws.upbound.io", "v1beta2", "Bucket", "BucketList")
 		if err != nil {
 			return errors.Wrap(err, "failed to get the reference target managed resource and its list for reference resolution")
 		}
-
 		rsp, err = r.Resolve(ctx, reference.ResolutionRequest{
 			CurrentValue: reference.FromPtrValue(mg.Spec.InitProvider.SourceBucketArn),
 			Extract:      resource.ExtractParamPath("arn", true),
