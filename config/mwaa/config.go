@@ -8,13 +8,12 @@ import (
 	"github.com/crossplane/upjet/pkg/config"
 )
 
-// Configure adds configurations for mwaa group.
 func Configure(p *config.Provider) {
 	p.AddResourceConfigurator("aws_mwaa_environment", func(r *config.Resource) {
 		r.References["network_configuration.subnet_ids"] = config.Reference{
 			TerraformName: "aws_subnet",
 		}
-		r.References["network_configuration.security_groups"] = config.Reference{
+		r.References["network_configuration.security_group_ids"] = config.Reference{
 			TerraformName: "aws_security_group",
 		}
 	})

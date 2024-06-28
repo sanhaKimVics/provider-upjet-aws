@@ -68,6 +68,27 @@ func (mg *Environment) ResolveReferences( // ResolveReferences of this Environme
 
 	if mg.Spec.ForProvider.NetworkConfiguration != nil {
 		{
+			m, l, err = apisresolver.GetManagedResource("ec2.aws.upbound.io", "v1beta1", "SecurityGroup", "SecurityGroupList")
+			if err != nil {
+				return errors.Wrap(err, "failed to get the reference target managed resource and its list for reference resolution")
+			}
+			mrsp, err = r.ResolveMultiple(ctx, reference.MultiResolutionRequest{
+				CurrentValues: reference.FromPtrValues(mg.Spec.ForProvider.NetworkConfiguration.SecurityGroupIds),
+				Extract:       reference.ExternalName(),
+				References:    mg.Spec.ForProvider.NetworkConfiguration.SecurityGroupIdsRefs,
+				Selector:      mg.Spec.ForProvider.NetworkConfiguration.SecurityGroupIdsSelector,
+				To:            reference.To{List: l, Managed: m},
+			})
+		}
+		if err != nil {
+			return errors.Wrap(err, "mg.Spec.ForProvider.NetworkConfiguration.SecurityGroupIds")
+		}
+		mg.Spec.ForProvider.NetworkConfiguration.SecurityGroupIds = reference.ToPtrValues(mrsp.ResolvedValues)
+		mg.Spec.ForProvider.NetworkConfiguration.SecurityGroupIdsRefs = mrsp.ResolvedReferences
+
+	}
+	if mg.Spec.ForProvider.NetworkConfiguration != nil {
+		{
 			m, l, err = apisresolver.GetManagedResource("ec2.aws.upbound.io", "v1beta1", "Subnet", "SubnetList")
 			if err != nil {
 				return errors.Wrap(err, "failed to get the reference target managed resource and its list for reference resolution")
@@ -144,6 +165,27 @@ func (mg *Environment) ResolveReferences( // ResolveReferences of this Environme
 	mg.Spec.InitProvider.KMSKey = reference.ToPtrValue(rsp.ResolvedValue)
 	mg.Spec.InitProvider.KMSKeyRef = rsp.ResolvedReference
 
+	if mg.Spec.InitProvider.NetworkConfiguration != nil {
+		{
+			m, l, err = apisresolver.GetManagedResource("ec2.aws.upbound.io", "v1beta1", "SecurityGroup", "SecurityGroupList")
+			if err != nil {
+				return errors.Wrap(err, "failed to get the reference target managed resource and its list for reference resolution")
+			}
+			mrsp, err = r.ResolveMultiple(ctx, reference.MultiResolutionRequest{
+				CurrentValues: reference.FromPtrValues(mg.Spec.InitProvider.NetworkConfiguration.SecurityGroupIds),
+				Extract:       reference.ExternalName(),
+				References:    mg.Spec.InitProvider.NetworkConfiguration.SecurityGroupIdsRefs,
+				Selector:      mg.Spec.InitProvider.NetworkConfiguration.SecurityGroupIdsSelector,
+				To:            reference.To{List: l, Managed: m},
+			})
+		}
+		if err != nil {
+			return errors.Wrap(err, "mg.Spec.InitProvider.NetworkConfiguration.SecurityGroupIds")
+		}
+		mg.Spec.InitProvider.NetworkConfiguration.SecurityGroupIds = reference.ToPtrValues(mrsp.ResolvedValues)
+		mg.Spec.InitProvider.NetworkConfiguration.SecurityGroupIdsRefs = mrsp.ResolvedReferences
+
+	}
 	if mg.Spec.InitProvider.NetworkConfiguration != nil {
 		{
 			m, l, err = apisresolver.GetManagedResource("ec2.aws.upbound.io", "v1beta1", "Subnet", "SubnetList")
